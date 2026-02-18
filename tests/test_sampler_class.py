@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pytest
 from ptemcee_bilby import Ptemcee
+from ptemcee_bilby.sampler import get_max_gradient
 
 
 @pytest.fixture()
@@ -92,3 +93,13 @@ def test_set_pos0_from_minimize(sampler, create_sampler):
     new_sampler = create_sampler(pos0="minimize")
     new = new_sampler.get_pos0().shape
     assert old == new
+
+
+def test_get_max_gradient_handles_non_finite_input():
+    x = np.array([[1.0, 2.0], [np.inf, 3.0], [4.0, 5.0]])
+    assert np.isinf(get_max_gradient(x, axis=0, window_length=3))
+
+
+def test_get_max_gradient_handles_short_input():
+    x = np.array([[1.0, 2.0], [3.0, 4.0]])
+    assert np.isinf(get_max_gradient(x, axis=0, window_length=3))
