@@ -927,7 +927,7 @@ def check_iteration(
     nsteps_to_check = ci.autocorr_tau * np.max([2 * GRAD_WINDOW_LENGTH, tau_int])
     lower_tau_index = np.max([0, len(tau_list) - nsteps_to_check])
     check_taus = np.array(tau_list[lower_tau_index:])
-    if not np.any(np.isnan(check_taus)) and check_taus.shape[0] > GRAD_WINDOW_LENGTH:
+    if np.all(np.isfinite(check_taus)) and check_taus.shape[0] > GRAD_WINDOW_LENGTH:
         gradient_tau = get_max_gradient(
             check_taus, axis=0, window_length=GRAD_WINDOW_LENGTH
         )
@@ -1037,13 +1037,32 @@ def get_max_gradient(x, axis=0, window_length=11, polyorder=2, smooth=False):
 
     from scipy.signal import savgol_filter
 
-    if smooth:
-        x = savgol_filter(x, axis=axis, window_length=window_length, polyorder=3)
-    return np.max(
-        savgol_filter(
+    x = np.asarray(x, dtype=float)
+    if not np.all(np.isfinite(x)):
+        return np.inf
+
+    if x.shape[axis] <= polyorder:
+        return np.inf
+
+    if window_length > x.shape[axis]:
+        return np.inf
+
+    try:
+        if smooth:
+            x = savgol_filter(x, axis=axis, window_length=window_length, polyorder=3)
+            if not np.all(np.isfinite(x)):
+                return np.inf
+
+        gradient = savgol_filter(
             x, axis=axis, window_length=window_length, polyorder=polyorder, deriv=1
         )
-    )
+    except (ValueError, np.linalg.LinAlgError):
+        return np.inf
+
+    if not np.all(np.isfinite(gradient)):
+        return np.inf
+
+    return float(np.max(gradient))
 
 
 def get_Q_convergence(samples):
