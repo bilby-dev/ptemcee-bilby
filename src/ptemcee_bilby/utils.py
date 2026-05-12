@@ -1,5 +1,6 @@
 import copy
 import datetime
+import os
 
 from bilby.core.utils import logger, safe_file_dump
 import numpy as np
@@ -515,7 +516,7 @@ def checkpoint(
 
     # Store the samples if possible
     if nsamples_effective > 0:
-        filename = f"{outdir}/{label}_samples.txt"
+        filename = os.path.join(outdir, f"{label}_samples.txt")
         samples = np.array(chain_array)[
             :, discard + nburn : iteration : thin, :
         ].reshape((-1, ndim))
@@ -601,7 +602,7 @@ def plot_walkers(walkers, nburn, thin, parameter_labels, outdir, label, discard=
         ax.set_ylabel(parameter_labels[i])
 
     fig.tight_layout()
-    filename = f"{outdir}/{label}_checkpoint_trace.png"
+    filename = os.path.join(outdir, f"{label}_checkpoint_trace.png")
     fig.savefig(filename)
     plt.close(fig)
 
@@ -624,7 +625,7 @@ def plot_tau(
     ax.set_ylabel(r"$\langle \tau \rangle$")
     ax.legend()
     fig.tight_layout()
-    fig.savefig(f"{outdir}/{label}_checkpoint_tau.png")
+    fig.savefig(os.path.join(outdir, f"{label}_checkpoint_tau.png"))
     plt.close(fig)
 
 
