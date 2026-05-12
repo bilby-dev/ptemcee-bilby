@@ -219,7 +219,9 @@ class Ptemcee(MCMCSampler):
         self.resume = resume
         self.check_point_delta_t = check_point_delta_t
         self.check_point_plot = check_point_plot
-        self.resume_file = f"{self.outdir}/{self.label}_checkpoint_resume.pickle"
+        self.resume_file = os.path.join(
+            self.outdir, f"{self.label}_checkpoint_resume.pickle"
+        )
 
         # Store convergence checking inputs in a named tuple
         convergence_inputs_dict = dict(
@@ -754,5 +756,5 @@ class Ptemcee(MCMCSampler):
         list
             List of directory names. Will always be empty for ptemcee.
         """
-        filenames = [f"{outdir}/{label}_checkpoint_resume.pickle"]
+        filenames = [os.path.join(outdir, f"{label}_checkpoint_resume.pickle")]
         return filenames, []

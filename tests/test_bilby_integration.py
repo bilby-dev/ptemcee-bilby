@@ -1,6 +1,7 @@
 import threading
 import time
 import signal
+import sys
 
 import bilby
 import pytest
@@ -69,6 +70,9 @@ def test_run_sampler(
     assert "derived" in result.posterior
 
 
+@pytest.mark.skipif(
+    sys.platform == "darwin", reason="Signal handling in threads is unreliable on macOS"
+)
 def test_interrupt_sampler(
     bilby_gaussian_likelihood_and_priors,
     outdir,
