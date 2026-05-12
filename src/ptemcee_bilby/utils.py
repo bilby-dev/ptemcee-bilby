@@ -649,7 +649,7 @@ def plot_mean_log_posterior(mean_log_posterior, outdir, label):
         ylim=(ymin, ymax),
     )
     fig.tight_layout()
-    fig.savefig(f"{outdir}/{label}_checkpoint_meanlogposterior.png")
+    fig.savefig(os.path.join(outdir, f"{label}_checkpoint_meanlogposterior.png"))
     plt.close(fig)
 
 
@@ -708,7 +708,7 @@ def compute_evidence(
         )
         ax2.set_xlabel(r"$\beta_{min}$")
         plt.tight_layout()
-        fig.savefig(f"{outdir}/{label}_beta_lnl.png")
+        fig.savefig(os.path.join(outdir, f"{label}_beta_lnl.png"))
         plt.close(fig)
 
     return lnZ, lnZerr
